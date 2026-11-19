@@ -3,7 +3,7 @@
 @theme {
   --color-abyss: #04070d;
   --color-panel: #0a121e;
-  --color-ink: #dcecF7;
+  --color-ink: #dcecf7;
   --color-dim: #6f879e;
   --color-fog: #9db4c7;
   --color-cyan-glow: #3ae0ff;
@@ -53,6 +53,7 @@ body {
   background:
     linear-gradient(160deg, rgba(14, 26, 42, 0.82), rgba(6, 12, 22, 0.92));
   border: 1px solid rgba(58, 224, 255, 0.13);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 .hud-panel::before,
@@ -280,4 +281,28 @@ body {
 }
 .typing-dot {
   animation: typing-dot 1.2s ease-in-out infinite;
+}
+
+/* ── accessibility ──────────────────────────────────────────────────── */
+@layer base {
+  :focus-visible {
+    outline: 1px solid var(--color-cyan-glow);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .scan-beam {
+    display: none;
+  }
 }
