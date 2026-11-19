@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Orbitron, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -26,15 +26,20 @@ export const metadata: Metadata = {
     "A JARVIS-style command center for mastering ML, deep learning, full-stack shipping, and launching a startup — in 14-day sprints.",
 };
 
+export const viewport: Viewport = {
+  themeColor: "#04070d",
+  colorScheme: "dark",
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${orbitron.variable} ${grotesk.variable} ${jbmono.variable}`}>
       <body className="bg-abyss text-ink font-sans antialiased min-h-screen">
-        <div className="bg-hud-grid fixed inset-0 -z-10" />
-        <div className="scan-fx" />
-        <div className="scan-beam" />
-        <div className="noise-fx" />
-        <div className="vignette-fx" />
+        <div className="bg-hud-grid fixed inset-0 -z-10" aria-hidden="true" />
+        <div className="scan-fx" aria-hidden="true" />
+        <div className="scan-beam" aria-hidden="true" />
+        <div className="noise-fx" aria-hidden="true" />
+        <div className="vignette-fx" aria-hidden="true" />
         <HudShell>{children}</HudShell>
       </body>
     </html>
