@@ -19,6 +19,9 @@ import { getVitals } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
+/** Logged pains needed to unlock the Decision Gate (keep in sync with /lab). */
+const PATTERN_THRESHOLD = 30;
+
 export default async function CommandDeck() {
   await ensureSeeded();
   const vitals = await getVitals();
@@ -30,7 +33,7 @@ export default async function CommandDeck() {
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 opacity-[0.16]">
-          <Image src="/images/circuit.jpg" alt="" fill priority className="object-cover" />
+          <Image src="/images/circuit.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-abyss/40 via-transparent to-abyss" />
         </div>
 
@@ -84,7 +87,7 @@ export default async function CommandDeck() {
           <Reveal delay={0.2} className="relative mx-auto hidden lg:block">
             <div className="relative h-[460px] w-[460px]">
               <div className="absolute inset-[52px] overflow-hidden rounded-full border border-cyan-glow/20 animate-floaty">
-                <Image src="/images/reactor.jpg" alt="Arc reactor core" fill className="object-cover opacity-90" />
+                <Image src="/images/reactor.jpg" alt="" fill sizes="460px" className="object-cover opacity-90" />
                 <div className="absolute inset-0 rounded-full shadow-[inset_0_0_60px_rgba(4,7,13,0.9)]" />
               </div>
               <div className="pointer-events-none absolute inset-0">
@@ -238,7 +241,12 @@ export default async function CommandDeck() {
           <div className="mt-12 grid items-center gap-8 lg:grid-cols-[340px_1fr]">
             <Reveal className="mx-auto">
               <div className="relative h-[240px] w-[240px]">
-                <svg viewBox="0 0 128 128" className="h-full w-full -rotate-90">
+                <svg
+                  viewBox="0 0 128 128"
+                  className="h-full w-full -rotate-90"
+                  role="img"
+                  aria-label={`Protocol sync ${pct}%`}
+                >
                   <circle cx="64" cy="64" r="56" fill="none" stroke="rgba(58,224,255,0.1)" strokeWidth="7" />
                   <circle
                     cx="64" cy="64" r="56" fill="none"
@@ -267,7 +275,7 @@ export default async function CommandDeck() {
                 { icon: Workflow, label: "MODULES CLEARED", value: `${vitals.done}/${vitals.total}` },
                 { icon: Gauge, label: "XP ACCUMULATED", value: `${vitals.xpEarned.toLocaleString()}`, sub: `of ${vitals.xpTotal.toLocaleString()}` },
                 { icon: Flame, label: "SHIP STREAK", value: `${vitals.streak}D` },
-                { icon: FlaskConical, label: "PAINS LOGGED", value: `${vitals.problems}/30` },
+                { icon: FlaskConical, label: "PAINS LOGGED", value: `${vitals.problems}/${PATTERN_THRESHOLD}` },
               ].map((s, i) => (
                 <Reveal key={s.label} delay={i * 0.08}>
                   <div className="hud-panel h-full p-5">
@@ -329,7 +337,7 @@ export default async function CommandDeck() {
       {/* ── MANIFESTO ────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-t border-cyan-glow/10">
         <div className="pointer-events-none absolute inset-0 opacity-[0.1]">
-          <Image src="/images/circuit.jpg" alt="" fill className="object-cover" />
+          <Image src="/images/circuit.jpg" alt="" fill sizes="100vw" className="object-cover" />
         </div>
         <div className="relative mx-auto max-w-5xl px-5 py-28 text-center md:px-10">
           <Reveal>
