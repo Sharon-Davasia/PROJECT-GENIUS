@@ -35,6 +35,7 @@ function PhaseBlock({
     <div className="hud-panel">
       <button
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         className="flex w-full items-center gap-4 p-5 text-left md:gap-6 md:p-6"
       >
         <span className="font-display text-3xl font-black text-cyan-glow/25 md:text-4xl">
@@ -149,9 +150,17 @@ export default function ModuleBoard({ initial }: { initial: Module[] }) {
   const [pending, startTransition] = useTransition();
 
   const mutate = (id: number, status: string) => {
+    const previous = mods.find((m) => m.id === id)?.status;
     setMods((ms) => ms.map((m) => (m.id === id ? { ...m, status } : m)));
     startTransition(async () => {
-      await setModuleStatus(id, status);
+      try {
+        await setModuleStatus(id, status);
+      } catch {
+        // server rejected the change: restore the previous status
+        if (previous !== undefined) {
+          setMods((ms) => ms.map((m) => (m.id === id ? { ...m, status: previous } : m)));
+        }
+      }
     });
   };
 
