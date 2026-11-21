@@ -11,6 +11,9 @@ const DOMAINS = [
   "Hiring / Careers", "Hostel / Housing", "Food", "Creator Economy", "Dev Tools", "Other",
 ];
 
+/** Logged pains needed before patterns become meaningful (the Decision Gate). */
+const PATTERN_THRESHOLD = 30;
+
 function resonance(pain: number, freq: number) {
   return pain * freq;
 }
@@ -59,7 +62,7 @@ export default function LabBoard({ initial }: { initial: Problem[] }) {
   const [pending, startTransition] = useTransition();
 
   const preview = resonance(pain, freq);
-  const remaining = Math.max(0, 30 - items.length);
+  const remaining = Math.max(0, PATTERN_THRESHOLD - items.length);
 
   const submit = () => {
     if (title.trim().length < 4) {
@@ -83,7 +86,13 @@ export default function LabBoard({ initial }: { initial: Problem[] }) {
     );
     startTransition(async () => {
       const res = await addProblem({ title: optimistic.title, domain, pain, frequency: freq, notes: notes.trim() });
-      if (!res.ok) setError(res.error ?? "Failed to log entry.");
+      if (!res.ok) {
+        // roll back the optimistic row and give the user their text back
+        setItems((xs) => xs.filter((x) => x.id !== optimistic.id));
+        setTitle(optimistic.title);
+        setNotes(optimistic.notes);
+        setError(res.error ?? "Failed to log entry.");
+      }
     });
     setTitle("");
     setNotes("");
@@ -115,6 +124,9 @@ export default function LabBoard({ initial }: { initial: Problem[] }) {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.nativeEvent.isComposing) submit();
+              }}
               placeholder="e.g. Mess menu decided by one uncle's mood"
               className="w-full border border-cyan-glow/20 bg-abyss/60 px-3 py-2.5 text-[13px] text-ink placeholder:text-dim/50 focus:border-cyan-glow/60 focus:outline-none"
             />
@@ -189,13 +201,13 @@ export default function LabBoard({ initial }: { initial: Problem[] }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-mono text-[10px] tracking-[0.26em] text-dim">JOURNAL CAPACITY</p>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#ffe3b0]">
-              {items.length}/30 — {remaining === 0 ? "PATTERN UNLOCKED: RUN THE DECISION GATE" : `${remaining} TO PATTERN THRESHOLD`}
+              {items.length}/{PATTERN_THRESHOLD} — {remaining === 0 ? "PATTERN UNLOCKED: RUN THE DECISION GATE" : `${remaining} TO PATTERN THRESHOLD`}
             </p>
           </div>
           <div className="mt-3 h-1.5 w-full bg-gold/10">
             <motion.div
               className="h-full bg-gradient-to-r from-gold to-stark"
-              animate={{ width: `${Math.min(100, (items.length / 30) * 100)}%` }}
+              animate={{ width: `${Math.min(100, (items.length / PATTERN_THRESHOLD) * 100)}%` }}
               transition={{ duration: 0.5 }}
             />
           </div>
