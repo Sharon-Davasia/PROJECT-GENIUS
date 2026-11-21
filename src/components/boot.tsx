@@ -18,6 +18,7 @@ export default function Boot() {
   const [show, setShow] = useState(false);
   const [count, setCount] = useState(0);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     try {
@@ -30,7 +31,8 @@ export default function Boot() {
       setCount((c) => {
         if (c >= LINES.length) {
           if (timer.current) clearInterval(timer.current);
-          setTimeout(() => {
+          if (exitTimer.current) clearTimeout(exitTimer.current);
+          exitTimer.current = setTimeout(() => {
             setShow(false);
             try {
               sessionStorage.setItem("pg-booted", "1");
@@ -45,6 +47,7 @@ export default function Boot() {
     }, 210);
     return () => {
       if (timer.current) clearInterval(timer.current);
+      if (exitTimer.current) clearTimeout(exitTimer.current);
     };
   }, []);
 
