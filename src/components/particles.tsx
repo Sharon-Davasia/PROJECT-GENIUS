@@ -27,6 +27,7 @@ export default function Particles() {
     let h = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const specks: Speck[] = [];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const resize = () => {
       w = window.innerWidth;
@@ -78,17 +79,22 @@ export default function Particles() {
         ctx.fill();
         ctx.shadowBlur = 0;
       }
-      raf = requestAnimationFrame(tick);
+      if (!reduceMotion) raf = requestAnimationFrame(tick);
     };
 
     resize();
     seed();
     tick();
-    window.addEventListener("resize", () => {
+    const onResize = () => {
       resize();
       seed();
-    });
-    return () => cancelAnimationFrame(raf);
+      if (reduceMotion) tick();
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   return (
