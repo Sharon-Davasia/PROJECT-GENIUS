@@ -23,6 +23,12 @@ const NAV = [
   { href: "/trajectory", label: "TRAJECTORY", icon: Orbit },
 ];
 
+function isActive(pathname: string | null, href: string) {
+  if (!pathname) return false;
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 function Clock() {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
@@ -78,14 +84,15 @@ export default function HudShell({ children }: { children: ReactNode }) {
       </header>
 
       {/* left rail — desktop */}
-      <nav className="fixed bottom-0 left-0 top-12 z-[60] hidden w-[76px] flex-col items-center gap-1 border-r border-cyan-glow/10 bg-abyss/70 py-5 backdrop-blur-md md:flex">
+      <nav aria-label="Primary" className="fixed bottom-0 left-0 top-12 z-[60] hidden w-[76px] flex-col items-center gap-1 border-r border-cyan-glow/10 bg-abyss/70 py-5 backdrop-blur-md md:flex">
         {NAV.map((item) => {
-          const active = pathname === item.href;
+          const active = isActive(pathname, item.href);
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={active ? "page" : undefined}
               className={`group relative flex w-full flex-col items-center gap-1.5 py-3.5 transition-colors ${
                 active ? "text-cyan-glow" : "text-dim hover:text-fog"
               }`}
@@ -109,14 +116,15 @@ export default function HudShell({ children }: { children: ReactNode }) {
       </nav>
 
       {/* bottom bar — mobile */}
-      <nav className="fixed inset-x-0 bottom-0 z-[60] flex items-stretch justify-around border-t border-cyan-glow/10 bg-abyss/90 backdrop-blur-md md:hidden">
+      <nav aria-label="Primary (mobile)" className="fixed inset-x-0 bottom-0 z-[60] flex items-stretch justify-around border-t border-cyan-glow/10 bg-abyss/90 backdrop-blur-md md:hidden">
         {NAV.map((item) => {
-          const active = pathname === item.href;
+          const active = isActive(pathname, item.href);
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={active ? "page" : undefined}
               className={`flex flex-col items-center gap-1 px-3 py-2.5 ${
                 active ? "text-cyan-glow" : "text-dim"
               }`}
