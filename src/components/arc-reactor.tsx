@@ -1,6 +1,16 @@
 // Pure SVG Arc Reactor — server-renderable, CSS-driven animation.
-export default function ArcReactor({ size = 420 }: { size?: number }) {
+export default function ArcReactor({
+  size = 420,
+  idPrefix = "arc",
+}: {
+  size?: number;
+  /** Prefix for SVG gradient ids — change it when rendering more than one reactor per page. */
+  idPrefix?: string;
+}) {
   const C = 210;
+  const coreId = `${idPrefix}-coreGrad`;
+  const haloId = `${idPrefix}-haloGrad`;
+  const coilId = `${idPrefix}-coilGrad`;
   const coils = Array.from({ length: 10 }, (_, i) => i * 36);
 
   return (
@@ -13,25 +23,25 @@ export default function ArcReactor({ size = 420 }: { size?: number }) {
         aria-label="Arc reactor visualization"
       >
         <defs>
-          <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
+          <radialGradient id={coreId} cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#eafcff" />
             <stop offset="35%" stopColor="#7fe9ff" />
             <stop offset="70%" stopColor="#1aa7d6" stopOpacity="0.75" />
             <stop offset="100%" stopColor="#0a6e96" stopOpacity="0" />
           </radialGradient>
-          <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
+          <radialGradient id={haloId} cx="50%" cy="50%" r="50%">
             <stop offset="55%" stopColor="#3ae0ff" stopOpacity="0" />
             <stop offset="82%" stopColor="#3ae0ff" stopOpacity="0.16" />
             <stop offset="100%" stopColor="#3ae0ff" stopOpacity="0" />
           </radialGradient>
-          <linearGradient id="coilGrad" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={coilId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#9cecff" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#1d8fb8" stopOpacity="0.5" />
           </linearGradient>
         </defs>
 
         {/* halo */}
-        <circle cx={C} cy={C} r={205} fill="url(#haloGrad)" />
+        <circle cx={C} cy={C} r={205} fill={`url(#${haloId})`} />
 
         {/* outer rotating dashed ring */}
         <g style={{ transformOrigin: "210px 210px", animation: "spin-slow-kf 26s linear infinite" }}>
@@ -79,7 +89,7 @@ export default function ArcReactor({ size = 420 }: { size?: number }) {
               key={deg}
               points={`${tx},${ty} ${b1x},${b1y} ${b2x},${b2y}`}
               fill="rgba(58,224,255,0.07)"
-              stroke="url(#coilGrad)"
+              stroke={`url(#${coilId})`}
               strokeWidth="1.4"
             />
           );
@@ -90,7 +100,7 @@ export default function ArcReactor({ size = 420 }: { size?: number }) {
         <circle cx={C} cy={C} r={70} fill="none" stroke="rgba(58,224,255,0.25)" strokeWidth="8" strokeDasharray="10 6" className="animate-dash-flow" />
 
         {/* core */}
-        <circle cx={C} cy={C} r={58} fill="url(#coreGrad)" className="animate-pulse-core" />
+        <circle cx={C} cy={C} r={58} fill={`url(#${coreId})`} className="animate-pulse-core" />
         <circle cx={C} cy={C} r={20} fill="#eafcff" opacity="0.95" className="animate-pulse-core" style={{ animationDelay: "0.4s" }} />
 
         {/* orbiting gold indicator */}
