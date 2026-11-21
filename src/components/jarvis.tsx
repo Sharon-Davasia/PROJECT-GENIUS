@@ -39,6 +39,15 @@ export default function Jarvis() {
 
   useEffect(() => () => timers.current.forEach(clearInterval), []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   const send = (raw: string) => {
     const text = raw.trim();
     if (!text || typing) return;
@@ -70,7 +79,8 @@ export default function Jarvis() {
       {/* launcher orb */}
       <motion.button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Open JARVIS"
+        aria-label={open ? "Close JARVIS" : "Open JARVIS"}
+        aria-expanded={open}
         className="group fixed bottom-[72px] right-4 z-[90] grid h-14 w-14 place-items-center rounded-full md:bottom-6 md:right-6"
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.94 }}
@@ -177,6 +187,7 @@ export default function Jarvis() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                aria-label="Message J.A.R.V.I.S"
                 placeholder="Ask about startups, internships, the protocol…"
                 className="flex-1 bg-transparent px-2 font-mono text-[12px] text-ink placeholder:text-dim/60 focus:outline-none"
               />
